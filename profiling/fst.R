@@ -1,22 +1,47 @@
 geno <- read.table("largedata/geno.txt", header=FALSE)
 names(geno)[1:4] <- c("chr", "pos", "ref", "alt")
 
-geno[, 5:ncol(geno)] <- apply(geno[, 5:ncol(geno)], c(1,2), function(x) {sum(as.numeric(strsplit(x, split = "/")[[1]]))})
+for(i in 5:407){
+  # replace slash and everything after it as nothing
+  geno$newcol <- gsub("/.*", "", geno[,i] )
+  # extract the line name
+  nm <- names(geno)[i]
+  # assign name for this allele
+  names(geno)[ncol(geno)] <- paste0(nm, sep="_a1")
+  geno$newcol <- gsub(".*/", "", geno[,i] )
+  names(geno)[ncol(geno)] <- paste0(nm, sep="_a2")
+}
 
-#geno$p <- apply(geno[, 5:ncol(geno)], 1, function(x) {prop.table(table(x))})
+
+geno$p <- apply(geno[, 408:1213], 1, function(x) {sum(as.numeric(as.character(x)),na.rm=T)})
+geno$p <- geno$p/806
+geno$p
+geno$p1 <- apply(geno[, 408:799], 1, function(x) {sum(as.numeric(as.character(x)),na.rm=T)})
+geno$p1
+geno$p1 <- geno$p1/392
+geno$p2 <- apply(geno[, 800:1213], 1, function(x) {sum(as.numeric(as.character(x)),na.rm=T)})
+geno$p2
+geno$p2 <- geno$p2/414
 
 
-geno$p <- apply(geno[, 5:ncol(geno)], 1, function(x) {sum(is.na(x))})
-geno$pmissing <- apply(geno[, 5:(ncol(geno)-1)], 1, function(x) {sum(is.na(x))})
-geno$p <- geno$p/ (2*(ncol(geno)-6-geno$pmissing))
 
-geno$p1 <- apply(geno[, 5:200], 1, function(x) {sum(is.na(x))})
-geno$p1missing <- apply(geno[, 5:200], 1, function(x) {sum(is.na(x))})
-geno$p1 <- geno$p1/ (2*196-geno$p1missing)
 
-geno$p2 <- apply(geno[, 201:ncol(geno)], 1, function(x) {sum(is.na(x))})
-geno$p2missing <- geno$pmissing - geno$p1missing
-geno$p2 <- geno$p2/ (2*211 - geno$p2missing)
+
+#geno[, 5:ncol(geno)] <- apply(geno[, 5:ncol(geno)], c(1,2), function(x) {sum(as.numeric(strsplit(x, split = "/")[[1]]))})
+
+
+
+# geno$p <- apply(geno[, 5:ncol(geno)], 1, function(x) {sum(is.na(x))})
+# geno$pmissing <- apply(geno[, 5:(ncol(geno)-1)], 1, function(x) {sum(is.na(x))})
+# geno$p <- geno$p/ (2*(ncol(geno)-6-geno$pmissing))
+# 
+# geno$p1 <- apply(geno[, 5:200], 1, function(x) {sum(is.na(x))})
+# geno$p1missing <- apply(geno[, 5:200], 1, function(x) {sum(is.na(x))})
+# geno$p1 <- geno$p1/ (2*196-geno$p1missing)
+# 
+# geno$p2 <- apply(geno[, 201:ncol(geno)], 1, function(x) {sum(is.na(x))})
+# geno$p2missing <- geno$pmissing - geno$p1missing
+# geno$p2 <- geno$p2/ (2*211 - geno$p2missing)
 
 
 geno$fst <- with(geno, ((p1-p)^2 + (p2-p)^2)/(2*p*(1-p)) )
