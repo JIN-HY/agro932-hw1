@@ -14,14 +14,14 @@ for(i in 5:407){
 
 
 geno$p <- apply(geno[, 408:1213], 1, function(x) {sum(as.numeric(as.character(x)),na.rm=T)})
-geno$p <- geno$p/806
-geno$p
+geno$p <- geno$p/806-rowSums(is.na(geno[,408:1213]))
+#geno$p
 geno$p1 <- apply(geno[, 408:799], 1, function(x) {sum(as.numeric(as.character(x)),na.rm=T)})
-geno$p1
-geno$p1 <- geno$p1/392
+#geno$p1
+geno$p1 <- geno$p1/392-rowSums(is.na(geno[,408:799]))
 geno$p2 <- apply(geno[, 800:1213], 1, function(x) {sum(as.numeric(as.character(x)),na.rm=T)})
-geno$p2
-geno$p2 <- geno$p2/414
+#geno$p2
+geno$p2 <- geno$p2/414-rowSums(is.na(geno[,800:1213]))
 
 
 
@@ -79,6 +79,7 @@ start <- seq(start0, end0-win, by = step)
 end <- start + win -1
 fst_win <- data.frame(start = start, end = end, fst = 0, nsite = 0)
 
+fst <- fst[!is.na(fst$fst),]
 for (row in 1:nrow(fst)) {
   pos <- fst$pos[row]
   pos.fst <- fst$fst[row]
